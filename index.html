@@ -43,6 +43,23 @@
                 <div class="belt-warnings" id="belt-warnings"></div>
             </div>
             
+            <!-- Dojo Animation Section -->
+            <div class="dojo-animation-section">
+                <h2>Training Dojo</h2>
+                <div class="dojo-canvas-container">
+                    <canvas id="dojo-canvas" width="600" height="400"></canvas>
+                    <div class="animation-controls">
+                        <label for="training-mode">Training Mode:</label>
+                        <select id="training-mode">
+                            <option value="idle">Meditation (Idle)</option>
+                            <option value="kata">Kata Forms</option>
+                            <option value="board-breaking">Board Breaking</option>
+                            <option value="sparring">Sparring Practice</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
             <div class="kata-instructions">
                 <h2 id="kata-title">Kata Title:</h2>
                 <p id="kata-description">Select a kata to begin your training...</p>
@@ -81,6 +98,7 @@
         <p>Martial Arts Coding Dojo &copy; 2025 - Train your coding skills with discipline</p>
     </footer>
     
+    <script src="dojo-animations.js"></script>
     <script src="kata-runner.js"></script>
 </body>
 </html>

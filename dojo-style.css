@@ -288,6 +288,64 @@ main {
   margin-top: 1rem;
 }
 
+/* Dojo Animation Section */
+.dojo-animation-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--wood-light);
+}
+
+.dojo-animation-section h2 {
+  font-family: 'Shippori Mincho', serif;
+  color: var(--wood-dark);
+  margin-top: 0;
+  border-bottom: 2px solid var(--accent-red);
+  padding-bottom: 0.5rem;
+}
+
+.dojo-canvas-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+#dojo-canvas {
+  border: 2px solid var(--wood-dark);
+  border-radius: 4px;
+  background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 30%, #8FBC8F 30%, #8FBC8F 100%);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  height: auto;
+}
+
+.animation-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background-color: rgba(245, 242, 233, 0.5);
+  border-radius: 4px;
+  border: 1px solid var(--wood-light);
+}
+
+.animation-controls label {
+  font-weight: bold;
+  color: var(--wood-dark);
+}
+
+.animation-controls select {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--wood-light);
+  border-radius: 4px;
+  background-color: white;
+  color: var(--text-dark);
+  font-family: inherit;
+}
+
 /* Kata History */
 #kata-history-section {
   grid-area: kata-history;

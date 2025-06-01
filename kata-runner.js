@@ -156,6 +156,11 @@ function updateProgressUI() {
     renderBeltProgress();
     renderBeltWarning();
     renderKataHistory();
+    
+    // Update dojo animation character belt
+    if (typeof dojoAnimator !== 'undefined' && dojoAnimator) {
+        dojoAnimator.setBelt(currentBelt);
+    }
 }
 
 function renderBeltProgress() {
@@ -296,6 +301,12 @@ document.getElementById('run-kata').addEventListener('click', () => {
     const code = userCodeEl.value;
     outputEl.textContent = '';
     if (!currentKata) return;
+    
+    // Trigger kata animation
+    if (typeof dojoAnimator !== 'undefined' && dojoAnimator) {
+        dojoAnimator.setAnimation('kata');
+    }
+    
     if (currentKata.type === 'js_dom_iframe') {
         try {
             const iframeWindow = appIframe.contentWindow;
@@ -321,6 +332,11 @@ document.getElementById('check-kata').addEventListener('click', async () => {
     // For now, let the server decide pass/fail; here, demo: pass if answer matches solution
     const isPass = (currentKata.solution && userAnswer.trim() === currentKata.solution.trim());
     const result = isPass ? 'pass' : 'fail';
+    
+    // Trigger board breaking animation for testing/checking
+    if (typeof dojoAnimator !== 'undefined' && dojoAnimator) {
+        dojoAnimator.setAnimation('board-breaking');
+    }
     
     try {
         console.log('Submitting kata solution...');
