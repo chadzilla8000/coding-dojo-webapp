@@ -14,10 +14,11 @@ class DojoAnimator {
         // Character properties
         this.character = {
             x: 300, // Center of canvas
-            y: 200,
+            y: 200, // Initial position, will be adjusted by alignCharacterToFloor
             width: 32,
             height: 48,
-            scale: 3
+            scale: 3,
+            hoverOffset: 0 // For subtle hover animation
         };
         
         // Belt colors mapping
@@ -64,6 +65,9 @@ class DojoAnimator {
         // Set up canvas
         this.ctx.imageSmoothingEnabled = false; // For pixel art
         
+        // Align character to floor
+        this.alignCharacterToFloor();
+        
         // Start animation loop
         this.animate();
         
@@ -71,6 +75,20 @@ class DojoAnimator {
         this.setupEventListeners();
         
         console.log('Dojo Animator initialized');
+    }
+    
+    // Helper method to align character's feet with the dojo floor
+    alignCharacterToFloor() {
+        // Position character so feet touch the floor
+        // Floor is at canvas.height - 100
+        // Character height is character.height * character.scale
+        // We want the bottom of the character to be at the floor level
+        // We need to account for the character being centered on its position
+        
+        const characterHeight = this.character.height * this.character.scale;
+        // Position character so bottom of feet is at floor level
+        // Subtract 5 pixels to make it look like they're standing on the floor rather than sinking into it
+        this.character.y = (this.canvas.height - 100) - (characterHeight / 4) - 5;
     }
     
     setupEventListeners() {
@@ -212,6 +230,14 @@ class DojoAnimator {
             this.animationFrame = (this.animationFrame + 1) % currentAnim.frames;
             this.frameCounter = 0;
         }
+        
+        // Update hover animation for idle state
+        if (this.currentAnimation === 'idle') {
+            // Subtle hover effect - character gently floats up and down
+            this.character.hoverOffset = Math.sin(this.frameCounter * 0.1) * 3;
+        } else {
+            this.character.hoverOffset = 0;
+        }
     }
     
     render() {
@@ -258,6 +284,262 @@ class DojoAnimator {
             ctx.lineTo(i, this.canvas.height - 100);
             ctx.stroke();
         }
+        
+        // Add horizontal beam at the top
+        ctx.fillStyle = '#8d6e63';
+        ctx.fillRect(0, 30, this.canvas.width, 8);
+        
+        // Draw traditional dojo decorations
+        this.drawDojoDecorations();
+    }
+    
+    drawDojoDecorations() {
+        const ctx = this.ctx;
+        
+        // 1. Draw wall-mounted katanas (crossed swords)
+        this.drawWallMountedKatanas(80, 60, 60, 30);
+        
+        // 2. Draw cherry blossom artwork in frame
+        this.drawCherryBlossomArtwork(200, 60, 100, 80);
+        
+        // 3. Draw calligraphy scroll
+        this.drawCalligraphyScroll(350, 50, 60, 90);
+        
+        // 4. Draw weapons rack
+        this.drawWeaponsRack(50, this.canvas.height - 140, 100, 40);
+        
+        // 5. Draw wooden training dummy (Muk Yan Jong)
+        this.drawWoodenDummy(450, this.canvas.height - 150, 50, 90);
+    }
+    
+    drawWallMountedKatanas(x, y, width, height) {
+        const ctx = this.ctx;
+        
+        // Wooden mount background
+        ctx.fillStyle = '#5d4037';
+        ctx.fillRect(x, y, width, height);
+        
+        // Decorative border
+        ctx.strokeStyle = '#3e2723';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x + 2, y + 2, width - 4, height - 4);
+        
+        // First katana (diagonal from top-left to bottom-right)
+        ctx.strokeStyle = '#424242'; // Scabbard
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(x + 10, y + 10);
+        ctx.lineTo(x + width - 10, y + height - 10);
+        ctx.stroke();
+        
+        // Katana handle
+        ctx.fillStyle = '#8B4513'; // Handle color
+        ctx.fillRect(x + 8, y + 8, 12, 6);
+        
+        // Second katana (diagonal from top-right to bottom-left)
+        ctx.strokeStyle = '#424242';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(x + width - 10, y + 10);
+        ctx.lineTo(x + 10, y + height - 10);
+        ctx.stroke();
+        
+        // Katana handle
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(x + width - 20, y + 8, 12, 6);
+        
+        // Blade highlights
+        ctx.strokeStyle = '#BDBDBD';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x + 15, y + 15);
+        ctx.lineTo(x + width - 15, y + height - 15);
+        ctx.moveTo(x + width - 15, y + 15);
+        ctx.lineTo(x + 15, y + height - 15);
+        ctx.stroke();
+    }
+    
+    drawCherryBlossomArtwork(x, y, width, height) {
+        const ctx = this.ctx;
+        
+        // Frame
+        ctx.fillStyle = '#5d4037';
+        ctx.fillRect(x, y, width, height);
+        
+        // Inner frame
+        ctx.fillStyle = '#f5f5f5';
+        ctx.fillRect(x + 5, y + 5, width - 10, height - 10);
+        
+        // Background gradient for sky
+        const gradient = ctx.createLinearGradient(x + 5, y + 5, x + 5, y + height - 10);
+        gradient.addColorStop(0, '#87CEEB'); // Sky blue
+        gradient.addColorStop(1, '#E6E6FA'); // Lavender
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x + 5, y + 5, width - 10, height - 10);
+        
+        // Draw mountain silhouette
+        ctx.fillStyle = '#6c757d';
+        ctx.beginPath();
+        ctx.moveTo(x + 5, y + height - 10);
+        ctx.lineTo(x + 30, y + height - 30);
+        ctx.lineTo(x + 50, y + height - 15);
+        ctx.lineTo(x + 70, y + height - 35);
+        ctx.lineTo(x + width - 5, y + height - 10);
+        ctx.fill();
+        
+        // Draw cherry blossom tree trunk
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(x + width/2 - 5, y + height/2, 10, height/2 - 10);
+        
+        // Draw cherry blossom flowers (pink dots)
+        ctx.fillStyle = '#FFB7C5'; // Light pink
+        
+        // Function to draw a small flower
+        const drawFlower = (cx, cy, size) => {
+            // Center
+            ctx.fillStyle = '#FFEC8B'; // Light yellow center
+            ctx.beginPath();
+            ctx.arc(cx, cy, size/3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Petals
+            ctx.fillStyle = '#FFB7C5'; // Light pink petals
+            for (let i = 0; i < 5; i++) {
+                const angle = (i / 5) * Math.PI * 2;
+                const px = cx + Math.cos(angle) * size;
+                const py = cy + Math.sin(angle) * size;
+                
+                ctx.beginPath();
+                ctx.arc(px, py, size/2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        };
+        
+        // Draw multiple flowers
+        drawFlower(x + width/2 - 15, y + height/2 - 10, 5);
+        drawFlower(x + width/2 + 10, y + height/2 - 15, 6);
+        drawFlower(x + width/2 - 5, y + height/2 - 25, 5);
+        drawFlower(x + width/2 + 20, y + height/2 - 5, 4);
+        drawFlower(x + width/2 - 25, y + height/2 - 5, 5);
+        drawFlower(x + width/2, y + height/2 - 5, 6);
+    }
+    
+    drawCalligraphyScroll(x, y, width, height) {
+        const ctx = this.ctx;
+        
+        // Scroll background
+        ctx.fillStyle = '#FFF8E1'; // Antique white
+        ctx.fillRect(x, y, width, height);
+        
+        // Scroll roller at top
+        ctx.fillStyle = '#8B4513'; // Wood brown
+        ctx.fillRect(x - 5, y, width + 10, 5);
+        
+        // Scroll roller at bottom
+        ctx.fillRect(x - 5, y + height - 5, width + 10, 5);
+        
+        // Scroll border
+        ctx.strokeStyle = '#D7CCC8';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x + 2, y + 2, width - 4, height - 4);
+        
+        // Draw calligraphy symbol for "Way" (道)
+        ctx.fillStyle = '#000';
+        ctx.font = '30px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('道', x + width/2, y + height/2 - 10);
+        
+        // Draw calligraphy symbol for "Martial" (武)
+        ctx.fillText('武', x + width/2, y + height/2 + 20);
+    }
+    
+    drawWeaponsRack(x, y, width, height) {
+        const ctx = this.ctx;
+        
+        // Rack base
+        ctx.fillStyle = '#5D4037'; // Dark wood
+        ctx.fillRect(x, y, width, height/4);
+        
+        // Rack supports
+        ctx.fillRect(x + 10, y - height, 5, height);
+        ctx.fillRect(x + width - 15, y - height, 5, height);
+        
+        // Horizontal supports
+        ctx.fillRect(x, y - height, width, 5);
+        ctx.fillRect(x, y - height/2, width, 5);
+        
+        // Draw weapons on the rack
+        
+        // Bo staff (horizontal)
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(x + 15, y - height + 15, width - 30, 4);
+        
+        // Nunchaku
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(x + 20, y - height/2 + 10, 15, 5);
+        ctx.fillRect(x + 45, y - height/2 + 10, 15, 5);
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x + 35, y - height/2 + 12.5);
+        ctx.lineTo(x + 45, y - height/2 + 12.5);
+        ctx.stroke();
+        
+        // Sai (three-pronged dagger)
+        ctx.fillStyle = '#BDBDBD'; // Silver
+        ctx.fillRect(x + 70, y - height/2 + 7, 3, 15);
+        ctx.fillRect(x + 65, y - height/2 + 7, 3, 10);
+        ctx.fillRect(x + 75, y - height/2 + 7, 3, 10);
+        ctx.fillStyle = '#8B4513'; // Handle
+        ctx.fillRect(x + 70, y - height/2 + 22, 3, 8);
+    }
+    
+    drawWoodenDummy(x, y, width, height) {
+        const ctx = this.ctx;
+        
+        // Main body (trunk)
+        ctx.fillStyle = '#8B4513'; // Wood brown
+        ctx.fillRect(x + width/2 - 15, y, 30, height);
+        
+        // Base
+        ctx.fillStyle = '#5D4037'; // Darker wood
+        ctx.fillRect(x, y + height - 10, width, 10);
+        
+        // Arms (3 horizontal pegs)
+        ctx.fillStyle = '#8B4513';
+        // Upper arm
+        ctx.fillRect(x + width/2 - 15, y + 20, 50, 8);
+        // Middle arm
+        ctx.fillRect(x + width/2 - 15, y + 40, 50, 8);
+        // Lower arm
+        ctx.fillRect(x + width/2 - 15, y + 60, 50, 8);
+        
+        // Leg (angled peg)
+        ctx.fillRect(x + width/2, y + height - 30, 8, 20);
+        
+        // Wood grain details
+        ctx.strokeStyle = '#3E2723';
+        ctx.lineWidth = 1;
+        for (let i = 5; i < height; i += 10) {
+            ctx.beginPath();
+            ctx.moveTo(x + width/2 - 15, y + i);
+            ctx.lineTo(x + width/2 + 15, y + i);
+            ctx.stroke();
+        }
+    }
+    
+    drawAura(x, y, scale) {
+        const ctx = this.ctx;
+        const auraSize = 60 * scale;
+        const pulseSize = Math.sin(this.frameCounter * 0.1) * 10;
+        
+        ctx.globalAlpha = 0.3;
+        ctx.fillStyle = this.characterStyle.auraColor;
+        ctx.beginPath();
+        ctx.arc(x + 16*scale, y + 24*scale, auraSize + pulseSize, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
     }
     
     drawCharacter() {
@@ -265,9 +547,9 @@ class DojoAnimator {
         const char = this.character;
         const scale = char.scale;
         
-        // Calculate position
+        // Calculate position with hover effect
         const x = char.x - (char.width * scale) / 2;
-        const y = char.y - (char.height * scale) / 2;
+        const y = char.y - (char.height * scale) / 2 + char.hoverOffset;
         
         // Draw special effects (aura) behind character
         if (this.characterStyle.hasSpecialEffects && this.characterStyle.auraColor) {
@@ -312,46 +594,20 @@ class DojoAnimator {
     }
     
     drawIdleCharacter(x, y, scale) {
-        const ctx = this.ctx;
+        const frame = this.animationFrame;
         
-        // Simple breathing animation
-        const breathOffset = Math.sin(this.animationFrame * 0.5) * 2;
+        // Improved idle animation with subtle breathing movement
+        // and a slight bounce in the legs to suggest readiness
+        const pose = {
+            headY: Math.sin(frame * 0.5) * 1,
+            armL: Math.sin(frame * 0.3) * 2, // Subtle arm movement
+            armR: Math.sin(frame * 0.3 + 1) * 2, // Slightly out of phase
+            legL: Math.sin(frame * 0.4) * 1.5, // Subtle leg movement
+            legR: Math.sin(frame * 0.4 + 1.5) * 1.5, // Out of phase with other leg
+            bodyTilt: Math.sin(frame * 0.2) * 0.5 // Very subtle body tilt
+        };
         
-        // Head
-        ctx.fillStyle = '#fdbcb4'; // Skin color
-        ctx.fillRect(x + 12*scale, y + 4*scale + breathOffset, 8*scale, 8*scale);
-        
-        // Hair
-        ctx.fillStyle = '#4a4a4a';
-        ctx.fillRect(x + 12*scale, y + 2*scale + breathOffset, 8*scale, 4*scale);
-        
-        // Gi (uniform) top
-        ctx.fillStyle = this.getUniformColor();
-        ctx.fillRect(x + 10*scale, y + 12*scale + breathOffset, 12*scale, 16*scale);
-        
-        // Belt
-        ctx.fillStyle = this.beltColors[this.currentBelt];
-        ctx.fillRect(x + 8*scale, y + 20*scale + breathOffset, 16*scale, 3*scale);
-        
-        // Arms
-        ctx.fillStyle = this.getUniformColor();
-        ctx.fillRect(x + 6*scale, y + 14*scale + breathOffset, 6*scale, 12*scale);
-        ctx.fillRect(x + 20*scale, y + 14*scale + breathOffset, 6*scale, 12*scale);
-        
-        // Hands
-        ctx.fillStyle = '#fdbcb4';
-        ctx.fillRect(x + 6*scale, y + 24*scale + breathOffset, 4*scale, 4*scale);
-        ctx.fillRect(x + 22*scale, y + 24*scale + breathOffset, 4*scale, 4*scale);
-        
-        // Legs
-        ctx.fillStyle = this.getUniformColor();
-        ctx.fillRect(x + 12*scale, y + 28*scale + breathOffset, 4*scale, 12*scale);
-        ctx.fillRect(x + 16*scale, y + 28*scale + breathOffset, 4*scale, 12*scale);
-        
-        // Feet
-        ctx.fillStyle = '#2a2a2a';
-        ctx.fillRect(x + 10*scale, y + 40*scale + breathOffset, 6*scale, 4*scale);
-        ctx.fillRect(x + 16*scale, y + 40*scale + breathOffset, 6*scale, 4*scale);
+        this.drawBasicCharacter(x, y, scale, pose);
     }
     
     drawKataCharacter(x, y, scale) {

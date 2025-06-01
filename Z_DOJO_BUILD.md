@@ -24,8 +24,20 @@
     - [File Structure](#enhanced-file-structure)
     - [Usage Examples](#enhanced-usage-examples)
 
+### 🏯 **Japanese Dojo Environment & Pixel Art System**
+5. [Japanese Dojo Environment & Character Animation](#japanese-dojo-environment--character-animation)
+    - [Environment Overview](#environment-overview)
+    - [Traditional Japanese Elements](#traditional-japanese-elements)
+    - [Character Animation System](#character-animation-system)
+    - [Pixel Art Drawing Guide](#pixel-art-drawing-guide)
+    - [Animation State Management](#animation-state-management)
+    - [Visual Effects & Special Elements](#visual-effects--special-elements)
+    - [Customization & Prompting Guide](#customization--prompting-guide)
+    - [Technical Implementation Details](#technical-implementation-details)
+    - [Future Enhancement Roadmap](#future-enhancement-roadmap)
+
 ### 🥋 **Belt System & Progression**
-5. [Belt Progression & Dojo Logic](#belt-progression--dojo-logic)
+6. [Belt Progression & Dojo Logic](#belt-progression--dojo-logic)
     - [Overview](#overview)
     - [Kata Attempt Tracking](#kata-attempt-tracking)
     - [Advancement & Demotion Rules](#advancement--demotion-rules)
@@ -37,25 +49,29 @@
     - [Back-End Implementation: Belt Calculation & Data Flow](#back-end-implementation-belt-calculation--data-flow)
 
 ### 🔧 **Technical Documentation**
-6. [Back-End API Documentation](#back-end-api-documentation)
+7. [Back-End API Documentation](#back-end-api-documentation)
     - [Overview](#overview-1)
     - [File Structure](#file-structure)
     - [Dependencies](#dependencies)
     - [API Endpoints](#api-endpoints)
-7. [Local & Remote Server Setup](#local--remote-server-setup)
+
+8. [Local & Remote Server Setup](#local--remote-server-setup)
     - [Quick Start (Local Development)](#quick-start-local-development)
     - [How Data is Injected in index.html](#how-data-is-injected-in-indexhtml)
     - [Production & Migration Notes](#production--migration-notes)
 
 ### 📋 **Project Management**
-8. [Session Review & Key Notes](#session-review--key-notes)
+9. [Session Review & Key Notes](#session-review--key-notes)
     - [Overview](#overview-2)
     - [Belt Progression & Data Flow](#belt-progression--data-flow)
     - [Front-End & Back-End Integration](#front-end--back-end-integration)
     - [Running & Deploying the App](#running--deploying-the-app)
     - [Lessons & Next Steps](#lessons--next-steps)
-9. [Technical Deployment & Migration](#technical-deployment--migration)
-10. [Development Logs](#development-logs)
+
+10. [Technical Deployment & Migration](#technical-deployment--migration)
+
+11. [Development Logs](#development-logs)
+    - [December 19, 2024 - Japanese Dojo Environment Documentation](#december-19-2024--japanese-dojo-environment-documentation)
     - [June 1, 2025 - 3:30 AM: Enhanced Animation System with Smart Discipline Selection](#june-1-2025--330-am-enhanced-animation-system-with-smart-discipline-selection)
     - [June 1, 2025 - 2:00 AM: Dojo Animation System Implementation](#june-1-2025--200-am-dojo-animation-system-implementation)
     - [May 31, 2025 - 11:30 PM: Fixed Kata Selection Functionality](#may-31-2025--1130-pm-fixed-kata-selection-functionality)
@@ -512,6 +528,691 @@ function handleKataCompletion(result, completionTime, accuracy) {
 - **Frame Rate Control:** Configurable `frameDelay` for performance tuning
 - **Memory Management:** Efficient rendering without memory leaks
 - **Responsive Design:** Canvas scales appropriately on different screen sizes
+
+---
+
+## Japanese Dojo Environment & Character Animation
+
+### Environment Overview
+
+The Japanese Dojo Environment system creates an authentic, immersive martial arts training space using pixel art techniques. This comprehensive system combines traditional Japanese architectural elements with modern animation technology to provide a rich visual experience that responds to student actions and belt progression.
+
+**Core Philosophy:**
+- **Authentic Japanese Aesthetics:** Traditional dojo elements including wooden floors, tatami mats, and cultural artifacts
+- **Responsive Environment:** Dynamic elements that react to character actions and training states
+- **Cultural Immersion:** Authentic Japanese decorative elements that enhance the learning experience
+- **Pixel Art Excellence:** Clean, scalable pixel art that maintains visual clarity at all sizes
+
+### Traditional Japanese Elements
+
+The dojo environment incorporates authentic Japanese cultural elements to create an immersive training atmosphere:
+
+#### 🏯 **Architectural Elements**
+
+**Wooden Floor System:**
+```javascript
+// Traditional wooden dojo floor with authentic grain patterns
+drawDojoBackground() {
+    // Wooden floor with realistic wood grain
+    ctx.fillStyle = '#8d6e63';  // Traditional wood brown
+    ctx.fillRect(0, this.canvas.height - 100, this.canvas.width, 100);
+    
+    // Floor planks with authentic spacing
+    ctx.strokeStyle = '#5d4037';  // Darker wood grain
+    ctx.lineWidth = 2;
+    for (let i = 0; i < this.canvas.width; i += 40) {
+        ctx.beginPath();
+        ctx.moveTo(i, this.canvas.height - 100);
+        ctx.lineTo(i, this.canvas.height);
+        ctx.stroke();
+    }
+}
+```
+
+**Wall Panel System:**
+```javascript
+// Traditional Japanese wall panels (Shoji-inspired)
+drawWallPanels() {
+    ctx.fillStyle = '#f5f2e9';  // Traditional paper white
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height - 100);
+    
+    // Vertical wooden supports
+    ctx.strokeStyle = '#8d6e63';
+    ctx.lineWidth = 3;
+    for (let i = 0; i < this.canvas.width; i += 80) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, this.canvas.height - 100);
+        ctx.stroke();
+    }
+}
+```
+
+#### ⚔️ **Wall-Mounted Katanas**
+
+**Design Specifications:**
+- **Position:** Upper left wall (80, 60, 60x30 pixels)
+- **Style:** Crossed katanas on wooden mount
+- **Details:** Authentic scabbards, handles, and blade highlights
+- **Cultural Significance:** Represents the samurai tradition and weapon mastery
+
+**Implementation Guide:**
+```javascript
+drawWallMountedKatanas(x, y, width, height) {
+    // Wooden mount background with decorative border
+    ctx.fillStyle = '#5d4037';
+    ctx.fillRect(x, y, width, height);
+    
+    // First katana (diagonal positioning)
+    ctx.strokeStyle = '#424242';  // Scabbard color
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x + 10, y + 10);
+    ctx.lineTo(x + width - 10, y + height - 10);
+    ctx.stroke();
+    
+    // Authentic handle details
+    ctx.fillStyle = '#8B4513';  // Traditional handle wrap
+    ctx.fillRect(x + 8, y + 8, 12, 6);
+}
+```
+
+#### 🌸 **Cherry Blossom Artwork**
+
+**Artistic Elements:**
+- **Position:** Center wall (200, 60, 100x80 pixels)
+- **Style:** Framed traditional painting with mountain landscape
+- **Features:** Cherry blossom tree, mountain silhouette, gradient sky
+- **Cultural Meaning:** Represents the beauty and transience of life (mono no aware)
+
+**Detailed Implementation:**
+```javascript
+drawCherryBlossomArtwork(x, y, width, height) {
+    // Traditional frame
+    ctx.fillStyle = '#5d4037';
+    ctx.fillRect(x, y, width, height);
+    
+    // Sky gradient (traditional Japanese art style)
+    const gradient = ctx.createLinearGradient(x + 5, y + 5, x + 5, y + height - 10);
+    gradient.addColorStop(0, '#87CEEB');  // Sky blue
+    gradient.addColorStop(1, '#E6E6FA');  // Lavender
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x + 5, y + 5, width - 10, height - 10);
+    
+    // Cherry blossom flowers with authentic petal design
+    const drawFlower = (cx, cy, size) => {
+        // Yellow center
+        ctx.fillStyle = '#FFEC8B';
+        ctx.beginPath();
+        ctx.arc(cx, cy, size/3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Pink petals (5-petal design)
+        ctx.fillStyle = '#FFB7C5';
+        for (let i = 0; i < 5; i++) {
+            const angle = (i / 5) * Math.PI * 2;
+            const px = cx + Math.cos(angle) * size;
+            const py = cy + Math.sin(angle) * size;
+            ctx.beginPath();
+            ctx.arc(px, py, size/2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    };
+}
+```
+
+#### 📜 **Calligraphy Scroll**
+
+**Cultural Elements:**
+- **Position:** Upper right wall (350, 50, 60x90 pixels)
+- **Content:** Traditional kanji characters for "Way" (道) and "Martial" (武)
+- **Style:** Antique scroll with wooden rollers
+- **Significance:** Represents the philosophical foundation of martial arts
+
+**Implementation Details:**
+```javascript
+drawCalligraphyScroll(x, y, width, height) {
+    // Antique scroll background
+    ctx.fillStyle = '#FFF8E1';  // Aged paper color
+    ctx.fillRect(x, y, width, height);
+    
+    // Wooden rollers (top and bottom)
+    ctx.fillStyle = '#8B4513';
+    ctx.fillRect(x - 5, y, width + 10, 5);
+    ctx.fillRect(x - 5, y + height - 5, width + 10, 5);
+    
+    // Traditional calligraphy
+    ctx.fillStyle = '#000';
+    ctx.font = '30px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('道', x + width/2, y + height/2 - 10);  // "Way"
+    ctx.fillText('武', x + width/2, y + height/2 + 20);  // "Martial"
+}
+```
+
+#### 🥋 **Weapons Rack**
+
+**Traditional Weapons Display:**
+- **Position:** Lower left (50, canvas.height - 140, 100x40 pixels)
+- **Weapons:** Bo staff, nunchaku, sai (three-pronged dagger)
+- **Construction:** Dark wood with horizontal supports
+- **Purpose:** Showcases traditional martial arts weapons
+
+#### 🎯 **Wooden Training Dummy (Muk Yan Jong)**
+
+**Training Equipment:**
+- **Position:** Lower right (450, canvas.height - 150, 50x90 pixels)
+- **Style:** Traditional Wing Chun wooden dummy
+- **Features:** Central trunk, three arm pegs, one leg peg
+- **Details:** Wood grain texture, authentic proportions
+
+### Character Animation System
+
+#### 🧘‍♂️ **Enhanced Character Design**
+
+**Character Specifications:**
+- **Dimensions:** 32x48 pixels base size, 3x scale factor
+- **Position:** Dynamically aligned to floor level
+- **Style:** Pixel art with authentic martial arts uniform (gi)
+- **Customization:** Belt-based uniform changes and special effects
+
+**Ground Alignment System:**
+```javascript
+alignCharacterToFloor() {
+    const characterHeight = this.character.height * this.character.scale;
+    // Position so feet touch floor, not floating
+    this.character.y = (this.canvas.height - 100) - (characterHeight / 4) - 5;
+}
+```
+
+#### 🎭 **Animation States & Behaviors**
+
+**Idle Animation (Enhanced):**
+```javascript
+drawIdleCharacter(x, y, scale) {
+    const frame = this.animationFrame;
+    
+    // Subtle breathing and readiness movements
+    const pose = {
+        headY: Math.sin(frame * 0.5) * 1,           // Gentle head movement
+        armL: Math.sin(frame * 0.3) * 2,            // Subtle arm sway
+        armR: Math.sin(frame * 0.3 + 1) * 2,        // Out of phase
+        legL: Math.sin(frame * 0.4) * 1.5,          // Slight leg shift
+        legR: Math.sin(frame * 0.4 + 1.5) * 1.5,    // Balanced stance
+        bodyTilt: Math.sin(frame * 0.2) * 0.5       // Minimal body tilt
+    };
+    
+    this.drawBasicCharacter(x, y, scale, pose);
+}
+```
+
+**Kata Animation (Traditional Forms):**
+```javascript
+drawKataCharacter(x, y, scale) {
+    // 8-frame kata sequence with authentic martial arts poses
+    const poses = [
+        { armL: -20, armR: 20, legL: 0, legR: 0 },      // Ready stance
+        { armL: -45, armR: 45, legL: -10, legR: 10 },   // Wide stance
+        { armL: 90, armR: -30, legL: 0, legR: 20 },     // Block and strike
+        { armL: -60, armR: 90, legL: 20, legR: 0 },     // Counter movement
+        { armL: 0, armR: 0, legL: -20, legR: 20 },      // Kick preparation
+        { armL: -30, armR: 30, legL: -30, legR: 45 },   // High kick
+        { armL: 45, armR: -45, legL: 10, legR: -10 },   // Return movement
+        { armL: 0, armR: 0, legL: 0, legR: 0 }          // Back to ready
+    ];
+    
+    const currentPose = poses[this.animationFrame];
+    this.drawAnimatedLimbs(x, y, scale, currentPose);
+}
+```
+
+### Pixel Art Drawing Guide
+
+#### 🎨 **Color Palette Standards**
+
+**Character Colors:**
+```javascript
+const characterPalette = {
+    skin: '#fdbcb4',        // Warm skin tone
+    hair: '#4a4a4a',        // Dark brown/black hair
+    giWhite: '#ffffff',     // Standard white gi
+    giBlack: '#2a2a2a',     // Advanced black gi
+    feet: '#2a2a2a',        // Black training shoes
+    hands: '#fdbcb4'        // Skin tone for hands
+};
+```
+
+**Environment Colors:**
+```javascript
+const environmentPalette = {
+    woodFloor: '#8d6e63',      // Traditional wood brown
+    woodGrain: '#5d4037',      // Darker wood details
+    wallPaper: '#f5f2e9',      // Traditional paper white
+    woodFrame: '#5d4037',      // Dark wood frames
+    metalWeapons: '#424242',   // Steel/iron weapons
+    weaponHandles: '#8B4513',  // Leather/wood handles
+    scrollPaper: '#FFF8E1',    // Aged paper
+    cherryPink: '#FFB7C5',     // Cherry blossom petals
+    cherryCenter: '#FFEC8B'    // Flower centers
+};
+```
+
+**Belt Progression Colors:**
+```javascript
+const beltColors = {
+    'white': '#f5f5f5',
+    'yellow': '#fff176',
+    'green': '#81c784',
+    'blue': '#64b5f6',
+    'brown': '#8d6e63',
+    'red': '#e57373',
+    'black': '#424242',
+    'black-recommended': '#424242'
+};
+```
+
+#### 🖌️ **Drawing Techniques**
+
+**Pixel Art Best Practices:**
+1. **Clean Lines:** Use single-pixel lines for clarity
+2. **Consistent Scaling:** Maintain 3x scale factor throughout
+3. **Limited Palette:** Stick to defined color schemes
+4. **Anti-Aliasing:** Avoid anti-aliasing for crisp pixel art
+5. **Readable Details:** Ensure elements are visible at target size
+
+**Character Drawing Process:**
+```javascript
+drawBasicCharacter(x, y, scale) {
+    // 1. Head (8x8 pixels)
+    ctx.fillStyle = '#fdbcb4';
+    ctx.fillRect(x + 12*scale, y + 4*scale, 8*scale, 8*scale);
+    
+    // 2. Hair (8x4 pixels)
+    ctx.fillStyle = '#4a4a4a';
+    ctx.fillRect(x + 12*scale, y + 2*scale, 8*scale, 4*scale);
+    
+    // 3. Body (12x16 pixels)
+    ctx.fillStyle = this.getUniformColor();
+    ctx.fillRect(x + 10*scale, y + 12*scale, 12*scale, 16*scale);
+    
+    // 4. Belt (16x3 pixels)
+    ctx.fillStyle = this.beltColors[this.currentBelt];
+    ctx.fillRect(x + 8*scale, y + 20*scale, 16*scale, 3*scale);
+    
+    // 5. Arms (6x12 pixels each)
+    ctx.fillStyle = this.getUniformColor();
+    ctx.fillRect(x + 6*scale, y + 14*scale, 6*scale, 12*scale);
+    ctx.fillRect(x + 20*scale, y + 14*scale, 6*scale, 12*scale);
+    
+    // 6. Legs (4x12 pixels each)
+    ctx.fillRect(x + 12*scale, y + 28*scale, 4*scale, 12*scale);
+    ctx.fillRect(x + 16*scale, y + 28*scale, 4*scale, 12*scale);
+    
+    // 7. Feet (6x4 pixels each)
+    ctx.fillStyle = '#2a2a2a';
+    ctx.fillRect(x + 10*scale, y + 40*scale, 6*scale, 4*scale);
+    ctx.fillRect(x + 16*scale, y + 40*scale, 6*scale, 4*scale);
+}
+```
+
+### Animation State Management
+
+#### 🔄 **State Transition System**
+
+**Animation Mapping:**
+```javascript
+const animationMap = {
+    'kata-forms': 'kata',
+    'kata-challenge': 'kata-challenge',
+    'kata-sparring': 'kata-sparring',
+    'level-up-test': 'level-up-test',
+    'board-breaking': 'board-breaking',
+    'sparring-practice': 'sparring',
+    'meditation': 'meditation'
+};
+```
+
+**Frame Management:**
+```javascript
+update() {
+    this.frameCounter++;
+    
+    const currentAnim = this.animations[this.currentAnimation];
+    if (this.frameCounter >= this.frameDelay) {
+        this.animationFrame = (this.animationFrame + 1) % currentAnim.frames;
+        this.frameCounter = 0;
+    }
+    
+    // Special hover effect for idle state
+    if (this.currentAnimation === 'idle') {
+        this.character.hoverOffset = Math.sin(this.frameCounter * 0.1) * 3;
+    } else {
+        this.character.hoverOffset = 0;
+    }
+}
+```
+
+#### 🎯 **Event-Driven Animation Triggers**
+
+**Discipline Selection:**
+```javascript
+function handleDisciplineSelection(discipline) {
+    currentDiscipline = discipline;
+    updateTrainingDisplayForDiscipline(discipline);
+    dojoAnimator.setAnimation(animationMap[discipline] || 'idle');
+}
+```
+
+**Belt Advancement:**
+```javascript
+setBelt(beltColor) {
+    const previousBelt = this.currentBelt;
+    this.currentBelt = beltColor;
+    this.updateCharacterStyle();
+    
+    if (this.isBeltAdvancement(previousBelt, beltColor)) {
+        this.triggerBeltAdvancementCelebration();
+    }
+}
+```
+
+### Visual Effects & Special Elements
+
+#### ✨ **Aura System**
+
+**Belt-Based Auras:**
+```javascript
+updateCharacterStyle() {
+    if (this.currentBelt === 'black-recommended' || this.currentBelt === 'black') {
+        this.characterStyle.giColor = 'black';
+        this.characterStyle.hasSpecialEffects = true;
+        this.characterStyle.auraColor = '#ffd700';  // Golden aura
+    } else if (this.currentBelt === 'red') {
+        this.characterStyle.hasSpecialEffects = true;
+        this.characterStyle.auraColor = '#ff6b6b';  // Red aura
+    }
+}
+```
+
+**Aura Rendering:**
+```javascript
+drawAura(x, y, scale) {
+    const auraSize = 60 * scale;
+    const pulseSize = Math.sin(this.frameCounter * 0.1) * 10;
+    
+    ctx.globalAlpha = 0.3;
+    ctx.fillStyle = this.characterStyle.auraColor;
+    ctx.beginPath();
+    ctx.arc(x + 16*scale, y + 24*scale, auraSize + pulseSize, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1.0;
+}
+```
+
+#### 🏆 **Achievement Badge System**
+
+**Badge Types:**
+```javascript
+const specialBadges = [
+    { type: 'speed', color: '#fff176', description: 'Speed Demon' },
+    { type: 'perfect', color: '#81c784', description: 'Perfectionist' },
+    { type: 'streak', color: '#e57373', description: 'Streak Master' }
+];
+```
+
+**Badge Rendering:**
+```javascript
+drawSpecialBadges(x, y, scale) {
+    let badgeY = y + 5*scale;
+    
+    this.characterStyle.specialBadges.forEach((badge, index) => {
+        ctx.fillStyle = badge.color;
+        
+        switch (badge.type) {
+            case 'speed':
+                // Lightning bolt
+                ctx.fillRect(badgeX, badgeY, 3*scale, 8*scale);
+                ctx.fillRect(badgeX + 2*scale, badgeY + 2*scale, 3*scale, 4*scale);
+                break;
+            case 'perfect':
+                // Star
+                ctx.arc(badgeX + 2*scale, badgeY + 2*scale, 3*scale, 0, Math.PI * 2);
+                ctx.fill();
+                break;
+            case 'streak':
+                // Flame
+                ctx.fillRect(badgeX, badgeY, 2*scale, 6*scale);
+                ctx.fillRect(badgeX + 1*scale, badgeY - 1*scale, 2*scale, 4*scale);
+                break;
+        }
+        
+        badgeY += 10*scale;
+    });
+}
+```
+
+### Customization & Prompting Guide
+
+#### 🎨 **AI Art Generation Prompts**
+
+**For Character Modifications:**
+```
+"Create a pixel art martial arts character in traditional white gi with [BELT_COLOR] belt, 
+32x48 pixels, 3x scale, clean pixel art style, no anti-aliasing, standing in ready position, 
+facing forward, simple but detailed, suitable for animation frames"
+```
+
+**For Environment Elements:**
+```
+"Design a traditional Japanese dojo element: [ELEMENT_TYPE], pixel art style, 
+[DIMENSIONS] pixels, traditional colors [COLOR_PALETTE], clean lines, 
+no anti-aliasing, suitable for martial arts training environment"
+```
+
+**For Weapons and Decorations:**
+```
+"Create traditional Japanese martial arts [WEAPON/DECORATION], pixel art style, 
+authentic design, [SPECIFIC_COLORS], mounted on wooden background, 
+clean pixel art with no anti-aliasing, [DIMENSIONS] pixels"
+```
+
+#### 🔧 **Customization Parameters**
+
+**Character Customization:**
+```javascript
+const characterOptions = {
+    skinTone: ['#fdbcb4', '#d4a574', '#8b5a3c'],
+    hairColor: ['#4a4a4a', '#8b4513', '#2c1810'],
+    giStyle: ['traditional', 'modern', 'competition'],
+    beltStyle: ['standard', 'embroidered', 'special'],
+    accessories: ['none', 'headband', 'gloves', 'protective-gear']
+};
+```
+
+**Environment Customization:**
+```javascript
+const environmentOptions = {
+    floorType: ['wood', 'tatami', 'modern'],
+    wallStyle: ['traditional', 'modern', 'mixed'],
+    decorations: ['minimal', 'traditional', 'extensive'],
+    lighting: ['natural', 'warm', 'dramatic'],
+    seasonalElements: ['none', 'cherry-blossoms', 'autumn-leaves']
+};
+```
+
+#### 📝 **Modification Guidelines**
+
+**Adding New Decorative Elements:**
+1. **Choose Position:** Identify wall space or floor area
+2. **Define Dimensions:** Use consistent pixel scaling
+3. **Select Colors:** Follow established palette
+4. **Create Drawing Function:** Follow naming convention `draw[ElementName](x, y, width, height)`
+5. **Integrate:** Add to `drawDojoDecorations()` method
+
+**Creating New Animation States:**
+1. **Define Pose Array:** Create frame-by-frame poses
+2. **Set Animation Properties:** Frame count and speed
+3. **Create Drawing Method:** `draw[AnimationName]Character(x, y, scale)`
+4. **Add to Switch Statement:** Include in character rendering
+5. **Map to Discipline:** Add to animation mapping system
+
+### Technical Implementation Details
+
+#### 🏗️ **Core Architecture**
+
+**Class Structure:**
+```javascript
+class DojoAnimator {
+    constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.currentBelt = 'white';
+        this.currentAnimation = 'idle';
+        this.animationFrame = 0;
+        this.frameCounter = 0;
+        this.frameDelay = 8;
+        
+        this.character = {
+            x: 300,
+            y: 200,
+            width: 32,
+            height: 48,
+            scale: 3,
+            hoverOffset: 0
+        };
+        
+        this.characterStyle = {
+            giColor: 'white',
+            hasSpecialEffects: false,
+            auraColor: null,
+            specialBadges: []
+        };
+    }
+}
+```
+
+**Rendering Pipeline:**
+1. **Clear Canvas:** `ctx.clearRect()`
+2. **Draw Background:** Floor, walls, decorations
+3. **Draw Special Effects (Behind):** Auras, particles
+4. **Draw Character:** Main character with current animation
+5. **Draw Special Effects (Front):** Badges, impact effects
+6. **Update Animation Frame:** Advance to next frame
+
+#### 🎮 **Performance Optimization**
+
+**Canvas Settings:**
+```javascript
+init() {
+    this.ctx.imageSmoothingEnabled = false;  // Crisp pixel art
+    this.alignCharacterToFloor();
+    this.animate();
+    this.setupEventListeners();
+}
+```
+
+**Efficient Animation Loop:**
+```javascript
+animate() {
+    this.update();
+    this.render();
+    requestAnimationFrame(() => this.animate());
+}
+```
+
+#### 🔗 **Integration Points**
+
+**With Kata Runner:**
+```javascript
+// Automatic discipline-based animation
+function handleDisciplineSelection(discipline) {
+    dojoAnimator.setAnimation(animationMap[discipline] || 'idle');
+}
+
+// Belt progression integration
+function updateBelt(newBelt) {
+    dojoAnimator.setBelt(newBelt);
+}
+
+// Achievement system integration
+function awardAchievement(type, color) {
+    dojoAnimator.addSpecialBadge({ type, color });
+}
+```
+
+### Future Enhancement Roadmap
+
+#### 🚀 **Planned Improvements**
+
+**Phase 1: Enhanced Environments**
+- [ ] Seasonal variations (spring cherry blossoms, autumn leaves)
+- [ ] Day/night cycle with lighting changes
+- [ ] Weather effects (rain, snow, wind)
+- [ ] Multiple dojo layouts (traditional, modern, outdoor)
+
+**Phase 2: Advanced Character System**
+- [ ] Multiple character models (different martial arts styles)
+- [ ] Customizable appearance (hair, skin tone, accessories)
+- [ ] Gender options with appropriate animations
+- [ ] Age progression system (child to master)
+
+**Phase 3: Interactive Elements**
+- [ ] Clickable decorations with information tooltips
+- [ ] Interactive training equipment
+- [ ] Background students practicing
+- [ ] Sensei character for guidance
+
+**Phase 4: Advanced Animation**
+- [ ] Smooth interpolation between poses
+- [ ] Physics-based cloth simulation for gi
+- [ ] Particle systems for special effects
+- [ ] 3D depth illusion with parallax scrolling
+
+#### 🎯 **Immediate Next Steps**
+
+1. **Add Tatami Mat Option:**
+   ```javascript
+   drawTatamiFloor() {
+       // Traditional woven mat texture
+       // Green color with border patterns
+   }
+   ```
+
+2. **Implement Seasonal Decorations:**
+   ```javascript
+   drawSeasonalElements(season) {
+       switch(season) {
+           case 'spring': this.drawCherryBlossomPetals(); break;
+           case 'autumn': this.drawFallingLeaves(); break;
+           case 'winter': this.drawSnowEffect(); break;
+       }
+   }
+   ```
+
+3. **Create Master/Sensei Character:**
+   ```javascript
+   drawSenseiCharacter(x, y, scale) {
+       // Older character with black belt
+       // Traditional hakama pants
+       // Wise expression and posture
+   }
+   ```
+
+#### 📚 **Documentation Expansion**
+
+**Planned Documentation Additions:**
+- [ ] Video tutorials for pixel art creation
+- [ ] Step-by-step animation guides
+- [ ] Cultural significance explanations
+- [ ] Advanced customization examples
+- [ ] Performance optimization techniques
+
+**Community Contributions:**
+- [ ] User-submitted decorative elements
+- [ ] Community animation challenges
+- [ ] Cultural accuracy feedback system
+- [ ] Accessibility improvements
 
 ---
 
