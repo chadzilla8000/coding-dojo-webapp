@@ -32,12 +32,29 @@ class DojoAnimator {
             'black-recommended': '#424242'
         };
         
-        // Animation states
+        // Special clubs and achievements
+        this.specialClubs = new Set();
+        this.achievements = new Set();
+        
+        // Character customization based on progression
+        this.characterStyle = {
+            giColor: 'white',
+            hasSpecialEffects: false,
+            auraColor: null,
+            specialBadges: []
+        };
+        
+        // Enhanced Animation states for different challenge types
         this.animations = {
             idle: { frames: 4, speed: 12 },
             kata: { frames: 8, speed: 6 },
+            'kata-challenge': { frames: 10, speed: 5 },
+            'kata-sparring': { frames: 12, speed: 4 },
+            'level-up-test': { frames: 6, speed: 3 },
             'board-breaking': { frames: 6, speed: 4 },
-            sparring: { frames: 8, speed: 5 }
+            sparring: { frames: 8, speed: 5 },
+            meditation: { frames: 6, speed: 15 },
+            celebration: { frames: 8, speed: 8 }
         };
         
         this.init();
@@ -57,12 +74,9 @@ class DojoAnimator {
     }
     
     setupEventListeners() {
-        const trainingModeSelect = document.getElementById('training-mode');
-        if (trainingModeSelect) {
-            trainingModeSelect.addEventListener('change', (e) => {
-                this.setAnimation(e.target.value);
-            });
-        }
+        // Event listeners are now handled by the kata-runner.js discipline system
+        // This method is kept for potential future manual animation controls
+        console.log('Dojo animation event listeners ready');
     }
     
     setAnimation(animationType) {
@@ -75,8 +89,113 @@ class DojoAnimator {
     }
     
     setBelt(beltColor) {
+        const previousBelt = this.currentBelt;
         this.currentBelt = beltColor;
-        console.log(`Belt changed to: ${beltColor}`);
+        
+        // Update character style based on belt progression
+        this.updateCharacterStyle();
+        
+        // Trigger celebration animation for belt advancement
+        if (this.isBeltAdvancement(previousBelt, beltColor)) {
+            this.triggerBeltAdvancementCelebration();
+        }
+        
+        console.log(`Belt changed from ${previousBelt} to: ${beltColor}`);
+    }
+    
+    // Smart event system for character customization
+    updateCharacterStyle() {
+        // Update gi color based on belt level
+        if (this.currentBelt === 'black-recommended' || this.currentBelt === 'black') {
+            this.characterStyle.giColor = 'black';
+            this.characterStyle.hasSpecialEffects = true;
+            this.characterStyle.auraColor = '#ffd700'; // Golden aura for black belts
+        } else if (this.currentBelt === 'red') {
+            this.characterStyle.giColor = 'white';
+            this.characterStyle.hasSpecialEffects = true;
+            this.characterStyle.auraColor = '#ff6b6b'; // Red aura for red belt
+        } else {
+            this.characterStyle.giColor = 'white';
+            this.characterStyle.hasSpecialEffects = false;
+            this.characterStyle.auraColor = null;
+        }
+    }
+    
+    // Check if this is a belt advancement (not demotion)
+    isBeltAdvancement(previousBelt, newBelt) {
+        const beltOrder = ['white', 'yellow', 'green', 'blue', 'brown', 'red', 'black-recommended', 'black'];
+        const prevIndex = beltOrder.indexOf(previousBelt);
+        const newIndex = beltOrder.indexOf(newBelt);
+        return newIndex > prevIndex;
+    }
+    
+    // Trigger celebration animation for belt advancement
+    triggerBeltAdvancementCelebration() {
+        const originalAnimation = this.currentAnimation;
+        this.setAnimation('celebration');
+        
+        // Return to original animation after celebration
+        setTimeout(() => {
+            this.setAnimation(originalAnimation);
+        }, 3000);
+    }
+    
+    // Add special club membership
+    addToSpecialClub(clubName) {
+        this.specialClubs.add(clubName);
+        this.updateSpecialBadges();
+        console.log(`Added to special club: ${clubName}`);
+    }
+    
+    // Remove from special club
+    removeFromSpecialClub(clubName) {
+        this.specialClubs.delete(clubName);
+        this.updateSpecialBadges();
+        console.log(`Removed from special club: ${clubName}`);
+    }
+    
+    // Update special badges based on clubs and achievements
+    updateSpecialBadges() {
+        this.characterStyle.specialBadges = [];
+        
+        // Add badges for special clubs
+        if (this.specialClubs.has('speed-demon')) {
+            this.characterStyle.specialBadges.push({ type: 'speed', color: '#00ff00' });
+        }
+        if (this.specialClubs.has('perfectionist')) {
+            this.characterStyle.specialBadges.push({ type: 'perfect', color: '#ffd700' });
+        }
+        if (this.specialClubs.has('streak-master')) {
+            this.characterStyle.specialBadges.push({ type: 'streak', color: '#ff4500' });
+        }
+    }
+    
+    // Set animation based on kata type automatically
+    setAnimationForKataType(kataType, challengeType = null) {
+        let animationType = 'idle';
+        
+        switch (challengeType) {
+            case 'kata-challenge':
+                animationType = 'kata-challenge';
+                break;
+            case 'kata-sparring':
+                animationType = 'kata-sparring';
+                break;
+            case 'level-up-test':
+                animationType = 'level-up-test';
+                break;
+            default:
+                // Default based on kata type
+                if (kataType === 'code') {
+                    animationType = 'kata';
+                } else if (kataType === 'quiz') {
+                    animationType = 'meditation';
+                } else {
+                    animationType = 'idle';
+                }
+        }
+        
+        this.setAnimation(animationType);
     }
     
     animate() {
@@ -150,6 +269,11 @@ class DojoAnimator {
         const x = char.x - (char.width * scale) / 2;
         const y = char.y - (char.height * scale) / 2;
         
+        // Draw special effects (aura) behind character
+        if (this.characterStyle.hasSpecialEffects && this.characterStyle.auraColor) {
+            this.drawAura(x, y, scale);
+        }
+        
         // Draw character based on current animation
         switch (this.currentAnimation) {
             case 'idle':
@@ -158,13 +282,33 @@ class DojoAnimator {
             case 'kata':
                 this.drawKataCharacter(x, y, scale);
                 break;
+            case 'kata-challenge':
+                this.drawKataChallengeCharacter(x, y, scale);
+                break;
+            case 'kata-sparring':
+                this.drawKataSparringCharacter(x, y, scale);
+                break;
+            case 'level-up-test':
+                this.drawLevelUpTestCharacter(x, y, scale);
+                break;
             case 'board-breaking':
                 this.drawBoardBreakingCharacter(x, y, scale);
                 break;
             case 'sparring':
                 this.drawSparringCharacter(x, y, scale);
                 break;
+            case 'meditation':
+                this.drawMeditationCharacter(x, y, scale);
+                break;
+            case 'celebration':
+                this.drawCelebrationCharacter(x, y, scale);
+                break;
+            default:
+                this.drawIdleCharacter(x, y, scale);
         }
+        
+        // Draw special badges on top of character
+        this.drawSpecialBadges(x, y, scale);
     }
     
     drawIdleCharacter(x, y, scale) {
@@ -363,9 +507,9 @@ class DojoAnimator {
     }
     
     getUniformColor() {
-        // Special uniforms for advanced belts
-        if (this.currentBelt === 'black-recommended' || this.currentBelt === 'black') {
-            return '#2a2a2a'; // Black gi
+        // Dynamic uniform color based on character style
+        if (this.characterStyle.giColor === 'black') {
+            return '#2a2a2a'; // Black gi for advanced practitioners
         }
         return '#ffffff'; // Standard white gi
     }
@@ -410,6 +554,244 @@ class DojoAnimator {
                 const y = this.character.y + Math.sin(angle) * 15;
                 ctx.fillRect(x, y, 3, 3);
             }
+        }
+    }
+    
+    // New enhanced animation methods
+    drawKataChallengeCharacter(x, y, scale) {
+        const ctx = this.ctx;
+        const frame = this.animationFrame;
+        
+        // More intense kata movements with multiple opponents
+        const pose = {
+            headY: Math.sin(frame * 0.8) * 2,
+            armL: Math.sin(frame * 1.2) * 15,
+            armR: Math.cos(frame * 1.2) * 15,
+            legL: Math.sin(frame * 0.9) * 8,
+            legR: Math.cos(frame * 0.9) * 8,
+            bodyTilt: Math.sin(frame * 0.6) * 3
+        };
+        
+        this.drawBasicCharacter(x, y, scale, pose);
+        
+        // Add challenge intensity effects
+        if (frame % 3 === 0) {
+            this.drawIntensityEffects(x, y, scale);
+        }
+    }
+    
+    drawKataSparringCharacter(x, y, scale) {
+        const ctx = this.ctx;
+        const frame = this.animationFrame;
+        
+        // Sparring movements with defensive and offensive poses
+        const pose = {
+            headY: Math.sin(frame * 0.5) * 1,
+            armL: Math.sin(frame * 1.5) * 20,
+            armR: Math.cos(frame * 1.8) * 18,
+            legL: Math.sin(frame * 1.1) * 12,
+            legR: Math.cos(frame * 1.3) * 10,
+            bodyTilt: Math.sin(frame * 0.7) * 5
+        };
+        
+        this.drawBasicCharacter(x, y, scale, pose);
+        
+        // Draw sparring partner shadow
+        this.drawSparringPartner(x + 100, y, scale, frame);
+    }
+    
+    drawLevelUpTestCharacter(x, y, scale) {
+        const ctx = this.ctx;
+        const frame = this.animationFrame;
+        
+        // Focused, precise movements for testing
+        const pose = {
+            headY: 0, // Steady head
+            armL: Math.sin(frame * 0.8) * 10,
+            armR: Math.cos(frame * 0.8) * 10,
+            legL: Math.sin(frame * 0.6) * 5,
+            legR: Math.cos(frame * 0.6) * 5,
+            bodyTilt: 0 // Steady body
+        };
+        
+        this.drawBasicCharacter(x, y, scale, pose);
+        
+        // Add concentration aura
+        this.drawConcentrationAura(x, y, scale);
+    }
+    
+    drawMeditationCharacter(x, y, scale) {
+        const ctx = this.ctx;
+        const frame = this.animationFrame;
+        
+        // Very subtle breathing motion
+        const pose = {
+            headY: Math.sin(frame * 0.3) * 0.5,
+            armL: 0, // Arms at rest
+            armR: 0,
+            legL: 0, // Legs in lotus position
+            legR: 0,
+            bodyTilt: Math.sin(frame * 0.2) * 0.5
+        };
+        
+        this.drawBasicCharacter(x, y, scale, pose);
+        
+        // Add meditation effects
+        this.drawMeditationEffects(x, y, scale);
+    }
+    
+    drawCelebrationCharacter(x, y, scale) {
+        const ctx = this.ctx;
+        const frame = this.animationFrame;
+        
+        // Energetic celebration movements
+        const pose = {
+            headY: Math.sin(frame * 2) * 3,
+            armL: Math.sin(frame * 2.5) * 25,
+            armR: Math.cos(frame * 2.5) * 25,
+            legL: Math.sin(frame * 2.2) * 15,
+            legR: Math.cos(frame * 2.2) * 15,
+            bodyTilt: Math.sin(frame * 1.8) * 8
+        };
+        
+        this.drawBasicCharacter(x, y, scale, pose);
+        
+        // Add celebration effects
+        this.drawCelebrationEffects(x, y, scale);
+    }
+    
+    // Special effects methods
+    drawAura(x, y, scale) {
+        const ctx = this.ctx;
+        const auraSize = 60 * scale;
+        const pulseSize = Math.sin(this.frameCounter * 0.1) * 10;
+        
+        ctx.globalAlpha = 0.3;
+        ctx.fillStyle = this.characterStyle.auraColor;
+        ctx.beginPath();
+        ctx.arc(x + 16*scale, y + 24*scale, auraSize + pulseSize, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+    }
+    
+    drawSpecialBadges(x, y, scale) {
+        const ctx = this.ctx;
+        let badgeX = x + 25*scale;
+        let badgeY = y + 5*scale;
+        
+        this.characterStyle.specialBadges.forEach((badge, index) => {
+            ctx.fillStyle = badge.color;
+            ctx.beginPath();
+            
+            switch (badge.type) {
+                case 'speed':
+                    // Lightning bolt shape
+                    ctx.fillRect(badgeX, badgeY, 3*scale, 8*scale);
+                    ctx.fillRect(badgeX + 2*scale, badgeY + 2*scale, 3*scale, 4*scale);
+                    break;
+                case 'perfect':
+                    // Star shape
+                    ctx.arc(badgeX + 2*scale, badgeY + 2*scale, 3*scale, 0, Math.PI * 2);
+                    ctx.fill();
+                    break;
+                case 'streak':
+                    // Flame shape
+                    ctx.fillRect(badgeX, badgeY, 2*scale, 6*scale);
+                    ctx.fillRect(badgeX + 1*scale, badgeY - 1*scale, 2*scale, 4*scale);
+                    break;
+            }
+            
+            badgeY += 10*scale; // Stack badges vertically
+        });
+    }
+    
+    drawIntensityEffects(x, y, scale) {
+        const ctx = this.ctx;
+        ctx.globalAlpha = 0.6;
+        ctx.strokeStyle = '#ff6b6b';
+        ctx.lineWidth = 2;
+        
+        // Energy lines around character
+        for (let i = 0; i < 4; i++) {
+            const angle = (i / 4) * Math.PI * 2;
+            const startX = x + 16*scale + Math.cos(angle) * 20*scale;
+            const startY = y + 24*scale + Math.sin(angle) * 20*scale;
+            const endX = startX + Math.cos(angle) * 10*scale;
+            const endY = startY + Math.sin(angle) * 10*scale;
+            
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+        }
+        
+        ctx.globalAlpha = 1.0;
+    }
+    
+    drawSparringPartner(x, y, scale, frame) {
+        const ctx = this.ctx;
+        ctx.globalAlpha = 0.4;
+        
+        // Simple shadow opponent
+        const pose = {
+            headY: Math.sin(frame * -0.5) * 1,
+            armL: Math.cos(frame * -1.5) * 15,
+            armR: Math.sin(frame * -1.8) * 15,
+            legL: Math.cos(frame * -1.1) * 8,
+            legR: Math.sin(frame * -1.3) * 8,
+            bodyTilt: Math.cos(frame * -0.7) * 3
+        };
+        
+        this.drawBasicCharacter(x, y, scale, pose);
+        ctx.globalAlpha = 1.0;
+    }
+    
+    drawConcentrationAura(x, y, scale) {
+        const ctx = this.ctx;
+        ctx.globalAlpha = 0.2;
+        ctx.strokeStyle = '#64b5f6';
+        ctx.lineWidth = 1;
+        
+        // Concentric circles for focus
+        for (let i = 1; i <= 3; i++) {
+            ctx.beginPath();
+            ctx.arc(x + 16*scale, y + 24*scale, i * 15*scale, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        
+        ctx.globalAlpha = 1.0;
+    }
+    
+    drawMeditationEffects(x, y, scale) {
+        const ctx = this.ctx;
+        const time = this.frameCounter * 0.05;
+        
+        // Floating particles
+        for (let i = 0; i < 5; i++) {
+            const particleX = x + 16*scale + Math.sin(time + i) * 30*scale;
+            const particleY = y + 10*scale + Math.cos(time + i * 0.7) * 20*scale;
+            
+            ctx.globalAlpha = 0.3 + Math.sin(time + i) * 0.2;
+            ctx.fillStyle = '#81c784';
+            ctx.beginPath();
+            ctx.arc(particleX, particleY, 2*scale, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        ctx.globalAlpha = 1.0;
+    }
+    
+    drawCelebrationEffects(x, y, scale) {
+        const ctx = this.ctx;
+        const frame = this.animationFrame;
+        
+        // Confetti effect
+        for (let i = 0; i < 10; i++) {
+            const confettiX = x + (i * 8 + frame * 3) % (40*scale);
+            const confettiY = y - 10*scale + Math.sin(frame * 0.5 + i) * 20*scale;
+            
+            ctx.fillStyle = ['#fff176', '#81c784', '#64b5f6', '#e57373'][i % 4];
+            ctx.fillRect(confettiX, confettiY, 2*scale, 2*scale);
         }
     }
 }

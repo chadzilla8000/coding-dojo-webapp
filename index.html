@@ -21,11 +21,25 @@
     <main>
         <!-- Kata Selection & Belt Progress -->
         <section class="kata-workspace">
-            <div class="kata-selector">
-                <label for="kata-select">Select Kata Challenge:</label>
+            <div class="discipline-selector">
+                <label for="discipline-select">Choose Your Discipline:</label>
+                <select id="discipline-select">
+                    <option value="">-- Select Training Discipline --</option>
+                    <option value="kata-forms">Kata Forms (Basic Practice)</option>
+                    <option value="kata-challenge">Kata Challenge (Timed Challenges)</option>
+                    <option value="kata-sparring">Kata Sparring (Competitive Practice)</option>
+                    <option value="level-up-test">Level Up Test (Belt Advancement)</option>
+                    <option value="board-breaking">Board Breaking (Precision Training)</option>
+                    <option value="sparring-practice">Sparring Practice (Combat Training)</option>
+                    <option value="meditation">Meditation (Mental Training)</option>
+                </select>
+            </div>
+            
+            <div class="kata-selector" style="margin-top: 15px;">
+                <label for="kata-select">Available Challenges:</label>
                 <select id="kata-select">
-                    <option value="">-- Choose a kata --</option>
-                    <!-- Kata options will be populated by JavaScript -->
+                    <option value="">-- Choose a challenge --</option>
+                    <!-- Kata options will be populated by JavaScript based on discipline -->
                 </select>
             </div>
             
@@ -48,14 +62,12 @@
                 <h2>Training Dojo</h2>
                 <div class="dojo-canvas-container">
                     <canvas id="dojo-canvas" width="600" height="400"></canvas>
-                    <div class="animation-controls">
-                        <label for="training-mode">Training Mode:</label>
-                        <select id="training-mode">
-                            <option value="idle">Meditation (Idle)</option>
-                            <option value="kata">Kata Forms</option>
-                            <option value="board-breaking">Board Breaking</option>
-                            <option value="sparring">Sparring Practice</option>
-                        </select>
+                    <div class="training-status">
+                        <label>Current Training:</label>
+                        <div id="current-training-display" class="training-display">
+                            <span id="training-mode-text">Awaiting Discipline Selection...</span>
+                            <span id="training-status-icon" class="status-icon">🧘</span>
+                        </div>
                     </div>
                 </div>
             </div>

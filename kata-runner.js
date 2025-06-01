@@ -12,7 +12,14 @@ const userCodeEl = document.getElementById('user-code');
 const outputEl = document.getElementById('kata-output');
 const appIframe = document.getElementById('app-iframe');
 const kataSelectEl = document.getElementById('kata-select');
+const disciplineSelectEl = document.getElementById('discipline-select');
 const currentBeltEl = document.getElementById('current-belt');
+const trainingModeTextEl = document.getElementById('training-mode-text');
+const trainingStatusIconEl = document.getElementById('training-status-icon');
+
+// Current discipline and training state
+let currentDiscipline = null;
+let availableKatasByDiscipline = {};
 
 async function fetchKatas() {
     try {
@@ -90,6 +97,45 @@ function useMockKataData() {
             "belt": "white"
         }
     ];
+    
+    // Organize katas by discipline for the new system
+    organizeKatasByDiscipline();
+}
+
+// Organize katas into discipline categories
+function organizeKatasByDiscipline() {
+    availableKatasByDiscipline = {
+        'kata-forms': [],
+        'kata-challenge': [],
+        'kata-sparring': [],
+        'level-up-test': [],
+        'board-breaking': [],
+        'sparring-practice': [],
+        'meditation': []
+    };
+    
+    // Categorize existing katas based on their properties
+    katas.forEach(kata => {
+        // Default to kata-forms for basic katas
+        let discipline = 'kata-forms';
+        
+        // Categorize based on kata properties
+        if (kata.difficulty === 'challenge' || kata.type === 'challenge') {
+            discipline = 'kata-challenge';
+        } else if (kata.type === 'sparring' || kata.category === 'sparring') {
+            discipline = 'kata-sparring';
+        } else if (kata.isLevelUpTest || kata.category === 'test') {
+            discipline = 'level-up-test';
+        } else if (kata.type === 'precision' || kata.category === 'breaking') {
+            discipline = 'board-breaking';
+        } else if (kata.type === 'combat' || kata.category === 'combat') {
+            discipline = 'sparring-practice';
+        } else if (kata.type === 'quiz' || kata.category === 'mental') {
+            discipline = 'meditation';
+        }
+        
+        availableKatasByDiscipline[discipline].push(kata);
+    });
 }
 
 async function fetchProgress() {
@@ -254,39 +300,123 @@ function updateBeltIcon(belt) {
 }
 
 function renderKataList() {
-    const kataSelectEl = document.getElementById('kata-select');
-    if (!kataSelectEl) {
-        console.warn('Kata select element not found in the DOM');
+    // Set up discipline selector event listener
+    if (disciplineSelectEl && !disciplineSelectEl.onchange) {
+        disciplineSelectEl.onchange = function() {
+            const selectedDiscipline = this.value;
+            handleDisciplineSelection(selectedDiscipline);
+        };
+    }
+    
+    // Set up kata selector event listener
+    if (kataSelectEl && !kataSelectEl.onchange) {
+        kataSelectEl.onchange = function() {
+            const selectedKataId = this.value;
+            if (selectedKataId) {
+                const selectedKata = katas.find(k => k.id === selectedKataId);
+                if (selectedKata) loadKata(selectedKata);
+            } else {
+                // Reset if default option is selected
+                resetKataDisplay();
+            }
+        };
+    }
+    
+    // Initially populate with all katas (until discipline is selected)
+    populateKataSelector(katas);
+}
+
+function handleDisciplineSelection(discipline) {
+    currentDiscipline = discipline;
+    
+    if (!discipline) {
+        // Reset to default state
+        updateTrainingDisplay('Awaiting Discipline Selection...', '🧘');
+        populateKataSelector(katas);
+        resetKataDisplay();
+        
+        // Set animation to idle
+        if (typeof dojoAnimator !== 'undefined' && dojoAnimator) {
+            dojoAnimator.setAnimation('idle');
+        }
         return;
     }
+    
+    // Update training display based on discipline
+    updateTrainingDisplayForDiscipline(discipline);
+    
+    // Filter and populate katas for this discipline
+    const disciplineKatas = availableKatasByDiscipline[discipline] || [];
+    populateKataSelector(disciplineKatas);
+    
+    // Set appropriate animation
+    if (typeof dojoAnimator !== 'undefined' && dojoAnimator) {
+        const animationMap = {
+            'kata-forms': 'kata',
+            'kata-challenge': 'kata-challenge',
+            'kata-sparring': 'kata-sparring',
+            'level-up-test': 'level-up-test',
+            'board-breaking': 'board-breaking',
+            'sparring-practice': 'sparring',
+            'meditation': 'meditation'
+        };
+        dojoAnimator.setAnimation(animationMap[discipline] || 'idle');
+    }
+}
+
+function updateTrainingDisplayForDiscipline(discipline) {
+    const disciplineInfo = {
+        'kata-forms': { text: 'Kata Forms - Basic Practice', icon: '🥋' },
+        'kata-challenge': { text: 'Kata Challenge - Timed Training', icon: '⚡' },
+        'kata-sparring': { text: 'Kata Sparring - Competitive Practice', icon: '⚔️' },
+        'level-up-test': { text: 'Level Up Test - Belt Advancement', icon: '🎯' },
+        'board-breaking': { text: 'Board Breaking - Precision Training', icon: '🪵' },
+        'sparring-practice': { text: 'Sparring Practice - Combat Training', icon: '🥊' },
+        'meditation': { text: 'Meditation - Mental Training', icon: '🧘‍♂️' }
+    };
+    
+    const info = disciplineInfo[discipline] || { text: 'Unknown Discipline', icon: '❓' };
+    updateTrainingDisplay(info.text, info.icon);
+}
+
+function updateTrainingDisplay(text, icon) {
+    if (trainingModeTextEl) trainingModeTextEl.textContent = text;
+    if (trainingStatusIconEl) trainingStatusIconEl.textContent = icon;
+}
+
+function populateKataSelector(kataList) {
+    if (!kataSelectEl) return;
+    
     // Clear all options except the first default one
     while (kataSelectEl.options.length > 1) {
         kataSelectEl.remove(1);
     }
     
     // Add kata options to the select dropdown
-    katas.forEach(kata => {
+    kataList.forEach(kata => {
         const option = document.createElement('option');
         option.value = kata.id;
         option.textContent = kata.title + (progress.completedKatas && progress.completedKatas.includes(kata.id) ? ' ✅' : '');
         kataSelectEl.appendChild(option);
     });
     
-    // Add change event listener to the select dropdown
-    kataSelectEl.onchange = function() {
-        const selectedKataId = this.value;
-        if (selectedKataId) {
-            const selectedKata = katas.find(k => k.id === selectedKataId);
-            if (selectedKata) loadKata(selectedKata);
-        } else {
-            // Reset if default option is selected
-            instructionTitleEl.textContent = 'Kata Title:';
-            instructionDescEl.textContent = 'Select a kata to begin your training...';
-            userCodeEl.value = '';
-            outputEl.textContent = '';
-            currentKata = null;
-        }
-    };
+    // Update the label based on available katas
+    const label = kataSelectEl.previousElementSibling;
+    if (label && kataList.length === 0) {
+        label.textContent = 'No challenges available for this discipline';
+    } else if (label) {
+        label.textContent = 'Available Challenges:';
+    }
+}
+
+function resetKataDisplay() {
+    instructionTitleEl.textContent = 'Kata Title:';
+    instructionDescEl.textContent = currentDiscipline ? 
+        'Select a challenge from the available options...' : 
+        'Select a discipline to begin your training...';
+    userCodeEl.value = '';
+    outputEl.textContent = '';
+    currentKata = null;
 }
 
 function loadKata(kata) {
@@ -302,9 +432,18 @@ document.getElementById('run-kata').addEventListener('click', () => {
     outputEl.textContent = '';
     if (!currentKata) return;
     
-    // Trigger kata animation
-    if (typeof dojoAnimator !== 'undefined' && dojoAnimator) {
-        dojoAnimator.setAnimation('kata');
+    // Smart animation based on current discipline
+    if (typeof dojoAnimator !== 'undefined' && dojoAnimator && currentDiscipline) {
+        const animationMap = {
+            'kata-forms': 'kata',
+            'kata-challenge': 'kata-challenge',
+            'kata-sparring': 'kata-sparring',
+            'level-up-test': 'level-up-test',
+            'board-breaking': 'board-breaking',
+            'sparring-practice': 'sparring',
+            'meditation': 'meditation'
+        };
+        dojoAnimator.setAnimation(animationMap[currentDiscipline] || 'kata');
     }
     
     if (currentKata.type === 'js_dom_iframe') {
@@ -333,9 +472,16 @@ document.getElementById('check-kata').addEventListener('click', async () => {
     const isPass = (currentKata.solution && userAnswer.trim() === currentKata.solution.trim());
     const result = isPass ? 'pass' : 'fail';
     
-    // Trigger board breaking animation for testing/checking
+    // Smart animation based on current discipline and result
     if (typeof dojoAnimator !== 'undefined' && dojoAnimator) {
-        dojoAnimator.setAnimation('board-breaking');
+        if (currentDiscipline === 'level-up-test') {
+            dojoAnimator.setAnimation('level-up-test');
+        } else if (currentDiscipline === 'board-breaking') {
+            dojoAnimator.setAnimation('board-breaking');
+        } else {
+            // Default to board-breaking for testing/checking
+            dojoAnimator.setAnimation('board-breaking');
+        }
     }
     
     try {
