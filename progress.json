@@ -1,0 +1,15 @@
+{
+  "username": "sample_user",
+  "dateStarted": "2025-05-31T22:34:46-04:00",
+  "currentBelt": "white",
+  "completedKatas": [],
+  "kataHistory": [
+    {
+      "kataId": "wb-html-1",
+      "timestamp": "2025-06-01T04:13:12.547Z",
+      "result": "fail",
+      "belt": "white"
+    }
+  ],
+  "warnings": []
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Martial Arts Coding Dojo</title>
+    <!-- Google Fonts for Japanese-inspired typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Shippori+Mincho:wght@500;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <!-- Custom Dojo CSS -->
+    <link rel="stylesheet" href="dojo-style.css">
+</head>
+<body>
+    <header>
+        <div class="mountain-bg"></div>
+        <div class="torii-gate"></div>
+        <h1 class="dojo-title">Coding Dojo <span class="belt-icon" id="belt-icon"></span> <span id="current-belt">White Belt</span></h1>
+    </header>
+    
+    <main>
+        <!-- Kata Selection & Belt Progress -->
+        <section class="kata-workspace">
+            <div class="kata-selector">
+                <label for="kata-select">Select Kata Challenge:</label>
+                <select id="kata-select">
+                    <option value="">-- Choose a kata --</option>
+                    <!-- Kata options will be populated by JavaScript -->
+                </select>
+            </div>
+            
+            <div class="belt-progress-section">
+                <h2>Belt Progress</h2>
+                <div class="belt-progress-ladder">
+                    <div class="belt white" title="White Belt"></div>
+                    <div class="belt yellow" title="Yellow Belt"></div>
+                    <div class="belt green" title="Green Belt"></div>
+                    <div class="belt blue" title="Blue Belt"></div>
+                    <div class="belt brown" title="Brown Belt"></div>
+                    <div class="belt red" title="Red Belt"></div>
+                    <div class="belt black" title="Black Belt"></div>
+                </div>
+                <div class="belt-warnings" id="belt-warnings"></div>
+            </div>
+            
+            <div class="kata-instructions">
+                <h2 id="kata-title">Kata Title:</h2>
+                <p id="kata-description">Select a kata to begin your training...</p>
+            </div>
+            
+            <div class="code-editor">
+                <label for="user-code">Your Code:</label>
+                <textarea id="user-code" rows="15"></textarea>
+            </div>
+            
+            <div class="kata-controls">
+                <button id="run-kata">Run</button>
+                <button id="check-kata">Check</button>
+                <button id="reset-kata">Reset</button>
+                <button id="show-solution">Show Solution</button>
+            </div>
+            
+            <div class="output-container">
+                <label>Output / Console:</label>
+                <pre id="kata-output"></pre>
+            </div>
+        </section>
+
+        <aside id="kata-preview">
+            <h3>Preview / Target Application</h3>
+            <iframe id="app-iframe" src="about:blank"></iframe>
+        </aside>
+        
+        <section id="kata-history-section">
+            <h2>Kata Attempt History</h2>
+            <ul id="kata-history-list"></ul>
+        </section>
+    </main>
+    
+    <footer>
+        <p>Martial Arts Coding Dojo &copy; 2025 - Train your coding skills with discipline</p>
+    </footer>
+    
+    <script src="kata-runner.js"></script>
+</body>
+</html>

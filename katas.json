@@ -1,0 +1,28 @@
+[
+  {
+    "id": "wb-js-1",
+    "title": "Variables in JavaScript",
+    "description": "What is the correct way to declare a variable in JavaScript?",
+    "type": "quiz",
+    "options": ["var myVar;", "let myVar;", "const myVar;", "All of the above"],
+    "solution": "All of the above",
+    "belt": "white"
+  },
+  {
+    "id": "wb-html-1",
+    "title": "Basic HTML Structure",
+    "description": "Write the HTML code for a heading that says 'Welcome to the Dojo!'",
+    "type": "code",
+    "solution": "<h1>Welcome to the Dojo!</h1>",
+    "belt": "white"
+  },
+  {
+    "id": "wb-css-1",
+    "title": "CSS Color Challenge",
+    "description": "What CSS rule would you use to make text red?",
+    "type": "quiz",
+    "options": ["color: blue;", "font-color: red;", "color: red;", "text-color: red;"],
+    "solution": "color: red;",
+    "belt": "white"
+  }
+]
