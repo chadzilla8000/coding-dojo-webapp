@@ -1,6 +1,8 @@
 # How to Build Your Dojo App
 
 ## Table of Contents
+
+### 🏗️ **Project Foundation**
 1. [Stack](#stack)
 2. [Core Features](#core-features)
 3. [Recommended Next Steps](#recommended-next-steps)
@@ -9,7 +11,18 @@
     - [Data Model](#data-model)
     - [Initial Kata/Quiz Content](#initial-kataquiz-content)
     - [Belt Advancement Logic](#belt-advancement-logic)
-4. [Belt Progression & Dojo Logic](#belt-progression--dojo-logic)
+
+### 🎨 **User Interface & Experience**
+4. [Dojo Animation System](#dojo-animation-system)
+    - [Overview](#animation-overview)
+    - [Technical Implementation](#animation-technical-implementation)
+    - [Animation States](#animation-states)
+    - [Belt Integration](#animation-belt-integration)
+    - [File Structure](#animation-file-structure)
+    - [Usage Examples](#animation-usage-examples)
+
+### 🥋 **Belt System & Progression**
+5. [Belt Progression & Dojo Logic](#belt-progression--dojo-logic)
     - [Overview](#overview)
     - [Kata Attempt Tracking](#kata-attempt-tracking)
     - [Advancement & Demotion Rules](#advancement--demotion-rules)
@@ -19,23 +32,28 @@
     - [Belt Progression Thresholds & Rules](#belt-progression-thresholds--rules)
     - [Kata History Data Model](#kata-history-data-model)
     - [Back-End Implementation: Belt Calculation & Data Flow](#back-end-implementation-belt-calculation--data-flow)
-5. [Back-End API Documentation](#back-end-api-documentation)
+
+### 🔧 **Technical Documentation**
+6. [Back-End API Documentation](#back-end-api-documentation)
     - [Overview](#overview-1)
     - [File Structure](#file-structure)
     - [Dependencies](#dependencies)
     - [API Endpoints](#api-endpoints)
-6. [Local & Remote Server Setup](#local--remote-server-setup)
+7. [Local & Remote Server Setup](#local--remote-server-setup)
     - [Quick Start (Local Development)](#quick-start-local-development)
     - [How Data is Injected in index.html](#how-data-is-injected-in-indexhtml)
     - [Production & Migration Notes](#production--migration-notes)
-7. [Session Review & Key Notes](#session-review--key-notes)
+
+### 📋 **Project Management**
+8. [Session Review & Key Notes](#session-review--key-notes)
     - [Overview](#overview-2)
     - [Belt Progression & Data Flow](#belt-progression--data-flow)
     - [Front-End & Back-End Integration](#front-end--back-end-integration)
     - [Running & Deploying the App](#running--deploying-the-app)
     - [Lessons & Next Steps](#lessons--next-steps)
-8. [Technical Deployment & Migration](#technical-deployment--migration)
-9. [Development Logs](#development-logs)
+9. [Technical Deployment & Migration](#technical-deployment--migration)
+10. [Development Logs](#development-logs)
+    - [June 1, 2025 - 2:00 AM: Dojo Animation System Implementation](#june-1-2025--200-am-dojo-animation-system-implementation)
     - [May 31, 2025 - 11:30 PM: Fixed Kata Selection Functionality](#may-31-2025--1130-pm-fixed-kata-selection-functionality)
 
 ## Stack
@@ -47,6 +65,7 @@
 ## Core Features
 - **User Progression:** Track which katas/tests are completed, current belt, etc.
 - **Kata Runner:** UI to view, attempt, and submit katas/tests.
+- **Dojo Animation System:** Interactive pixel-art character with belt progression and training animations.
 - **Admin Tools:** (Optional) Add/edit katas and belt requirements.
 - **Persistence:** Save progress (localStorage, file, or DB).
 
@@ -73,6 +92,159 @@
 
 ### Belt Advancement Logic
 - Define requirements for each belt (e.g., “complete 5 white belt katas and a form test to advance”).
+
+---
+
+## Dojo Animation System
+
+### Animation Overview
+The Dojo Animation System provides an immersive, interactive visual experience that brings the martial arts coding dojo to life. Built with HTML5 Canvas and vanilla JavaScript, it features a pixel-art character that responds to user actions and reflects their belt progression in real-time.
+
+**Key Features:**
+- **Pixel-Perfect Character Animation:** Hand-crafted 32x48 pixel character with 3x scaling
+- **Dynamic Belt Visualization:** Character's belt color updates automatically with user progression
+- **Interactive Training Modes:** Multiple animation states triggered by user actions
+- **Responsive Design:** Seamlessly integrated with the existing dojo theme
+- **Performance Optimized:** Efficient frame-based animation system with configurable timing
+
+### Animation Technical Implementation
+
+**Core Architecture:**
+```javascript
+class DojoAnimator {
+    constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.currentBelt = 'white';
+        this.currentAnimation = 'idle';
+        this.animationFrame = 0;
+        this.frameCounter = 0;
+        this.frameDelay = 8; // Configurable timing
+    }
+}
+```
+
+**Rendering Pipeline:**
+1. **Background Rendering:** Wooden dojo floor with traditional wall panels
+2. **Character Rendering:** Multi-layered sprite system (head, body, limbs, belt)
+3. **Animation State Management:** Frame-based animation with smooth transitions
+4. **Effect Rendering:** Motion trails, impact effects, and visual feedback
+
+**Integration Points:**
+- **Belt Updates:** `dojoAnimator.setBelt(beltColor)` - Called when user belt changes
+- **Animation Triggers:** `dojoAnimator.setAnimation(type)` - Triggered by user actions
+- **Event Listeners:** Connected to kata execution and checking buttons
+
+### Animation States
+
+| Animation State | Trigger | Description | Frame Count | Visual Effects |
+|----------------|---------|-------------|-------------|----------------|
+| **Idle** | Default/Reset | Peaceful meditation stance with subtle breathing | 4 frames | Gentle breathing motion |
+| **Kata** | Run Kata button | Dynamic martial arts forms sequence | 8 frames | Motion trails, stance changes |
+| **Board-Breaking** | Check Kata button | Powerful strike sequence with impact | 6 frames | Board destruction, impact burst |
+| **Sparring** | Manual selection | Training with opponent character | 8 frames | Dual character interaction |
+
+**Animation Timing:**
+- **Frame Delay:** 8 frames (adjustable for performance)
+- **Loop Behavior:** Continuous cycling through animation frames
+- **State Transitions:** Immediate switching with frame reset
+
+### Animation Belt Integration
+
+**Belt Color Mapping:**
+```javascript
+this.beltColors = {
+    'white': '#f5f5f5',
+    'yellow': '#fff176',
+    'green': '#81c784',
+    'blue': '#64b5f6',
+    'brown': '#8d6e63',
+    'red': '#e57373',
+    'black': '#424242',
+    'black-recommended': '#424242'
+};
+```
+
+**Uniform Progression:**
+- **White through Red Belts:** Traditional white gi (uniform)
+- **Black Recommended & Black:** Special black gi for advanced practitioners
+- **Real-time Updates:** Character appearance changes immediately when belt advances
+
+**Integration with Progress System:**
+```javascript
+// Automatic belt updates in kata-runner.js
+function updateProgressUI() {
+    // ... existing code ...
+    if (typeof dojoAnimator !== 'undefined' && dojoAnimator) {
+        dojoAnimator.setBelt(currentBelt);
+    }
+}
+```
+
+### Animation File Structure
+
+```
+martial_arts/
+├── dojo-animations.js     # Main animation system (432 lines)
+├── index.html            # Canvas element and controls
+├── dojo-style.css        # Animation styling (58 lines)
+└── kata-runner.js        # Integration hooks
+```
+
+**File Responsibilities:**
+- **`dojo-animations.js`:** Complete animation engine, character rendering, state management
+- **`index.html`:** Canvas container, training mode selector, script loading
+- **`dojo-style.css`:** Visual styling for canvas, controls, and responsive layout
+- **`kata-runner.js`:** Event integration, belt updates, animation triggers
+
+### Animation Usage Examples
+
+**Basic Initialization:**
+```javascript
+// Automatic initialization on DOM load
+document.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.getElementById('dojo-canvas');
+    if (canvas) {
+        dojoAnimator = new DojoAnimator('dojo-canvas');
+    }
+});
+```
+
+**Manual Animation Control:**
+```javascript
+// Change animation state
+dojoAnimator.setAnimation('kata');        // Trigger kata forms
+dojoAnimator.setAnimation('board-breaking'); // Trigger board breaking
+dojoAnimator.setAnimation('sparring');    // Trigger sparring practice
+dojoAnimator.setAnimation('idle');        // Return to meditation
+
+// Update belt progression
+dojoAnimator.setBelt('yellow');  // Character belt changes to yellow
+dojoAnimator.setBelt('black');   // Character gets black gi and belt
+```
+
+**Event Integration:**
+```javascript
+// Kata execution trigger
+document.getElementById('run-kata').addEventListener('click', () => {
+    if (typeof dojoAnimator !== 'undefined' && dojoAnimator) {
+        dojoAnimator.setAnimation('kata');
+    }
+});
+
+// Kata checking trigger
+document.getElementById('check-kata').addEventListener('click', () => {
+    if (typeof dojoAnimator !== 'undefined' && dojoAnimator) {
+        dojoAnimator.setAnimation('board-breaking');
+    }
+});
+```
+
+**Performance Considerations:**
+- **Canvas Optimization:** `imageSmoothingEnabled = false` for crisp pixel art
+- **Frame Rate Control:** Configurable `frameDelay` for performance tuning
+- **Memory Management:** Efficient rendering without memory leaks
+- **Responsive Design:** Canvas scales appropriately on different screen sizes
 
 ---
 
@@ -517,6 +689,73 @@ chmod 755 *.js
 
 
 ## Development Logs
+
+### June 1, 2025 - 2:00 AM: Dojo Animation System Implementation
+
+#### Overview
+Implemented a comprehensive interactive animation system that brings the martial arts coding dojo to life with a pixel-art character that responds to user actions and reflects belt progression in real-time.
+
+#### Features Implemented
+
+**Core Animation Engine:**
+- Built a complete `DojoAnimator` class with HTML5 Canvas rendering
+- Implemented frame-based animation system with configurable timing
+- Created pixel-perfect character rendering (32x48 pixels at 3x scale)
+- Added smooth animation state transitions and loop management
+
+**Interactive Training Modes:**
+- **Idle Animation:** Peaceful meditation stance with subtle breathing motion
+- **Kata Animation:** Dynamic martial arts forms with 8-frame sequence
+- **Board-Breaking Animation:** Powerful strike sequence with visual impact effects
+- **Sparring Animation:** Training session with opponent character interaction
+
+**Belt Progression Integration:**
+- Real-time belt color updates reflecting user progress
+- Special uniform changes for advanced belts (black gi for black belts)
+- Automatic synchronization with existing belt progression system
+- Visual feedback for all belt levels (white through black)
+
+**User Interface Integration:**
+- Canvas-based animation area with responsive design
+- Training mode selector for manual animation control
+- Seamless integration with existing dojo theme and styling
+- Animation triggers connected to kata execution and checking buttons
+
+#### Technical Implementation
+
+**Files Created/Modified:**
+- **`dojo-animations.js`** (432 lines): Complete animation engine with character rendering, state management, and belt integration
+- **`index.html`**: Added canvas element, animation controls, and script integration
+- **`dojo-style.css`** (58 new lines): Styling for animation section, canvas, and controls
+- **`kata-runner.js`**: Added animation triggers and belt update integration
+
+**Architecture Highlights:**
+- Object-oriented design with clean separation of concerns
+- Efficient rendering pipeline with background, character, and effects layers
+- Event-driven animation state management
+- Performance optimized with configurable frame delays
+- Memory-efficient canvas operations without leaks
+
+**Integration Points:**
+- Belt updates: `dojoAnimator.setBelt(beltColor)` called automatically on progression
+- Animation triggers: Connected to "Run Kata" and "Check Kata" button clicks
+- Manual control: Training mode dropdown for user-initiated animations
+- Progress synchronization: Real-time updates when belt status changes
+
+#### User Experience Enhancements
+- **Visual Feedback:** Immediate animation responses to user actions
+- **Immersive Experience:** Character brings personality to the coding practice
+- **Progress Visualization:** Belt changes are immediately visible on character
+- **Interactive Elements:** Users can manually control training animations
+- **Responsive Design:** Animation scales appropriately on different screen sizes
+
+#### Development Workflow
+- Implemented on `development` branch following established Git workflow
+- Comprehensive commit with detailed feature description
+- Successfully merged to `feature` branch for staging
+- All changes pushed to remote repository for collaboration
+
+This implementation significantly enhances the user experience by adding visual engagement and personality to the coding dojo, making the learning process more immersive and rewarding.
 
 ### May 31, 2025 - 11:30 PM: Fixed Kata Selection Functionality
 
